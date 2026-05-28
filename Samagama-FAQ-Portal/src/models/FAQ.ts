@@ -3,7 +3,7 @@
  *
  * Mongoose model for FAQ entries.
  *
- * Mirrors the `FAQ` interface in src/data/faqData.ts:
+ * Schema fields match the `FAQ` interface in src/data/faqData.ts:
  *   { id, question, answer, category, categoryId, tags, helpful, notHelpful, lastUpdated }
  *
  * Additional DB-only fields:
@@ -19,14 +19,14 @@ import mongoose, { Document, Model, Schema, Types } from "mongoose";
 export interface IFAQ extends Document {
   /**
    * Human-readable ID (e.g. "1.1", "12.4").
-   * Kept as string to match the existing frontend data shape exactly.
+   * Named `id` to match the existing frontend FAQ interface exactly.
    */
-  faqId: string;
+  id: string;
   question: string;
   answer: string;
   /** Display name of the parent category */
   category: string;
-  /** Numeric foreign key matching Category.categoryId */
+  /** Numeric foreign key matching Category.id */
   categoryId: number;
   tags: string[];
   helpful: number;
@@ -46,7 +46,7 @@ export interface IFAQ extends Document {
 
 const FAQSchema = new Schema<IFAQ>(
   {
-    faqId: {
+    id: {
       type: String,
       required: true,
       unique: true,

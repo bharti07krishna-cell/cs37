@@ -15,8 +15,8 @@ import mongoose, { Document, Model, Schema } from "mongoose";
 // ─── TypeScript interface ─────────────────────────────────────────────────────
 
 export interface ICategory extends Document {
-  /** Numeric ID used by the existing frontend (categoryId on FAQ) */
-  categoryId: number;
+  /** Numeric ID matching Category.id in src/data/faqData.ts */
+  id: number;
   name: string;
   /** Emoji icon, e.g. "📋" */
   icon: string;
@@ -31,7 +31,7 @@ export interface ICategory extends Document {
 
 const CategorySchema = new Schema<ICategory>(
   {
-    categoryId: {
+    id: {
       type: Number,
       required: true,
       unique: true,
