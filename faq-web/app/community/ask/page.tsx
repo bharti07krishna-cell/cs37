@@ -14,6 +14,7 @@ import { motion } from "framer-motion";
 import { Send, Lightbulb, AlertCircle, CheckCircle, ArrowRight } from "lucide-react";
 import Header from "@/components/Header";
 import { cn } from "@/lib/utils";
+import { api } from "@/lib/community/client";
 
 export default function CommunityAskPage() {
   const [title, setTitle] = useState("");
@@ -37,24 +38,25 @@ export default function CommunityAskPage() {
       .map((t) => t.trim())
       .filter(Boolean);
 
-    // Unified flow: questions live in `pending_questions` (the community feed).
-    // They appear on /community once approved, with an AI helper reply attached.
-    const question = body.trim()
-      ? `${title.trim()}\n\n${body.trim()}`
-      : title.trim();
-
     try {
-      const res = await fetch("/api/ask", {
+      // Post to the community questions API (attaches x-student-id automatically
+      // via the api() helper so the question is attributed to this student).
+      const json = await api("/api/community/questions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question, category: tags[0] ?? "General" }),
+        body: JSON.stringify({
+          title: title.trim(),
+          body: body.trim() || undefined,
+          tags,
+        }),
       });
-      const json = await res.json();
       if (json.ok) {
         setSubmitted(true);
         return;
       }
-      setError(json?.error?.message ?? "Something went wrong. Try again.");
+      setError(
+        (json.error as { message?: string } | undefined)?.message ??
+          "Something went wrong. Try again."
+      );
     } catch {
       setError("Something went wrong. Try again.");
     } finally {
